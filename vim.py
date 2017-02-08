@@ -49,7 +49,6 @@ videos_url = '/me/videos'
 all_data = []
 vids = v.get(videos_url).json()
 total = vids['total']
-total = 40
 while len(all_data) < total:
     print 'Total vids:'+str(len(all_data)) + ' of ' + str(total)
     all_data.extend(vids['data'])
