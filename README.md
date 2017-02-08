@@ -4,5 +4,6 @@ This python script will download all your videos from your vimeo account and sav
 
 I wrote it so I could back up my videos as simply as possible.
 
-It doesn't check if it has downloaded things already, just downloads everything.
+It does a basic check to see if it has already downloaded things before it does it. 
+
 

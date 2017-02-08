@@ -1,14 +1,22 @@
 import vimeo
 import json
 import requests
+import re
+import os
 
 
 # edit these settings
 v = vimeo.VimeoClient(
-    token='your token',
-    key='your key',
-    secret = 'your secret'
+    token='your token here',
+    key='your key here',
+    secret='your secret here'
     )
+#
+# v = vimeo.VimeoClient(
+#     token='your token',
+#     key='your key',
+#     secret = 'your secret'
+#     )
 
 def download_file(url, local_filename):
     print "Downloading "+url+" to "+local_filename
@@ -41,6 +49,7 @@ videos_url = '/me/videos'
 all_data = []
 vids = v.get(videos_url).json()
 total = vids['total']
+total = 40
 while len(all_data) < total:
     print 'Total vids:'+str(len(all_data)) + ' of ' + str(total)
     all_data.extend(vids['data'])
@@ -50,12 +59,15 @@ while len(all_data) < total:
     print "Getting next... "+next
     vids = v.get(next).json()
 
-# Now download the largest file associated with each video 
+# Now download the largest file associated with each video
 # (we assume that is the best quality)
 for vidset in all_data:
     title = vidset['name']
     uri = get_biggest_vid(vidset)
     type = vidset['files'][0]['type'].split('/')[1]
-    print uri
-    download_file(uri, title + "." + type)
-
+    filename = re.sub(r'\W+', '', title.replace(' ', '_')) + '.' + type
+    #print uri
+    if os.path.exists(filename):
+        print "Already downloaded "+filename+" probably - skipping. Might want to delete it to force download though!"
+        continue
+    download_file(uri, filename)
