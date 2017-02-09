@@ -7,16 +7,10 @@ import os
 
 # edit these settings
 v = vimeo.VimeoClient(
-    token='your token here',
-    key='your key here',
-    secret='your secret here'
+    token='token here',
+    key='key here', 
+    secret='secret here'
     )
-#
-# v = vimeo.VimeoClient(
-#     token='your token',
-#     key='your key',
-#     secret = 'your secret'
-#     )
 
 def download_file(url, local_filename):
     print "Downloading "+url+" to "+local_filename
@@ -37,7 +31,10 @@ def get_biggest_vid(vidset):
             max = file['size']
             url = file['link']
     print 'Biggest file '+str(max)
-    return url
+    if max == 0:
+	return
+    else:
+    	return url
 
 
 # Make and check the request to the server for the "/me" endpoint.
@@ -49,6 +46,7 @@ videos_url = '/me/videos'
 all_data = []
 vids = v.get(videos_url).json()
 total = vids['total']
+total = 40
 while len(all_data) < total:
     print 'Total vids:'+str(len(all_data)) + ' of ' + str(total)
     all_data.extend(vids['data'])
@@ -63,8 +61,12 @@ while len(all_data) < total:
 for vidset in all_data:
     title = vidset['name']
     uri = get_biggest_vid(vidset)
+    if uri == None:
+	print "No videos for some reason... skipping"
+	continue
     type = vidset['files'][0]['type'].split('/')[1]
-    filename = re.sub(r'\W+', '', title.replace(' ', '_')) + '.' + type
+    id = vidset['link'].split('/')[-1]
+    filename = re.sub(r'\W+', '', title.replace(' ', '_')) + '_' + str(id) + '.' + type
     #print uri
     if os.path.exists(filename):
         print "Already downloaded "+filename+" probably - skipping. Might want to delete it to force download though!"
